@@ -2,8 +2,7 @@
 layout: default
 ---
 {% if page.header.image %}
-<div class="page-banner" style="margin-bottom: 20px;">
-  <img src="{{ page.header.image | relative_url }}" alt="Page Banner" loading="eager" style="width: 100%; display: block;">
+<div class="page-banner" style="background-image: url('{{ page.header.image | relative_url }}'); margin-bottom: 20px;">
   {% if page.header.caption %}
   <div class="page-banner-caption">{{ page.header.caption }}</div>
   {% endif %}
