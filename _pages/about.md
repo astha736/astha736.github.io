@@ -4,7 +4,7 @@ title: Research
 permalink: /
 header:
   image: "/assets/img/Amphibious_Banner.jpg"
-imagemagick: true
+imagemagick: false
 #   caption: "Your caption here"
 # profile:
 #   align: center
@@ -29,16 +29,8 @@ Locomotion in real-world environments is particularly challenging for robots due
 
 
 <div class="row justify-content-sm-center">
-  <!-- Video Section -->
-  <div class="col-sm-4 mt-3 mt-md-0">
-      {% include figure.liquid path="assets/img/guinea_fowl_running.webp" title="example image" class="img-fluid rounded z-depth-1"  height="200px"%}
-      <!-- <img src="/assets/img/guinea_fowl_running.webp" alt="Descriptive text about the GIF" class="img-fluid"> -->
-      <p class="caption">Daley, Monica A., et al. "Running over rough terrain: guinea fowl maintain dynamic stability despite a large unexpected change in substrate height." </p> 
-  </div>
-  
-  <!-- GIF Section -->
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/Atlas_BD_Fail.webp" title="example image" class="img-fluid rounded z-depth-1"  height="300px" %}
+  <div class="col-sm-12 mt-3 mt-md-0">
+    {% include figure.liquid path="assets/img/output.webp" title="example image" class="img-fluid rounded z-depth-1" %}
     <!-- <img src="/assets/img/Atlas_BD_Fail.webp" alt="Descriptive text about the GIF" class="img-fluid"> -->
   <p class="caption">Agility Robotics's Digit [left], and Boston Dynamics's Atlas [right].</p> 
   </div>
