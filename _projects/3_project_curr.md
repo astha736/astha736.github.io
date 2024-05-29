@@ -3,7 +3,7 @@ layout: page
 title: Amphibious Path Planning
 description:
 img: assets/img/12.jpg
-importance: 1
+importance: 3
 category: current
 related_publications: true
 ---

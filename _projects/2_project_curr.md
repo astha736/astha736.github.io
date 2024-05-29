@@ -3,7 +3,7 @@ layout: page
 title: Bio-Inspired Controllers Facilitate Sim-to-Real Transfer
 description: Exploring how central pattern generators facilitate sim-to-real transfers
 img: assets/img/12.jpg
-importance: 1
+importance: 2
 category: current
 related_publications: true
 ---
