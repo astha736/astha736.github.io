@@ -1,8 +1,8 @@
 ---
 layout: page
 title: From Water to Land Unchanged
-description: Multimodal locomotor control using proprioceptive feedback impart terrestrial swimming ability of elongated fish
-img: assets/img/12.jpg
+description: This project explores the transition of locomotion from aquatic to terrestrial environments in eel-like robots. By leveraging proprioceptive and somatosensory feedback, the study aims to develop multi-modal locomotion capabilities, mimicking the seamless movement observed in eels.
+img: assets/img/Water_to_Land.webp
 importance: 1
 category: current
 related_publications: true

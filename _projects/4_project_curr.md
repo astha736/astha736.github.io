@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Understanding sensory integration
-description:
-img: assets/img/12.jpg
+title: Deep Reinforcement Learning for Insights into Spatial, Topological, and Functional Integration of Proprioceptive Feedback during Undulatory Swimming
+description: This research utilizes deep reinforcement learning to investigate how proprioceptive feedback integrates spatially, topologically, and functionally during undulatory swimming. By simulating these complex interactions, the project seeks to enhance our understanding of locomotor control in aquatic environments.
+img: assets/img/Sensory_Integration.webp
 importance: 4
 category: current
 related_publications: true

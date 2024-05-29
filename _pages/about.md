@@ -4,7 +4,7 @@ title: Research
 permalink: /
 header:
   image: "/assets/img/Amphibious_Banner.jpg"
-imagemagick: false
+imagemagick: true
 #   caption: "Your caption here"
 # profile:
 #   align: center
@@ -49,4 +49,35 @@ Meanwhile animals exhibit remarkable robustness to such disruptions, allowing th
     Illustration of different components of the locomotor system and their interaction in animals and bio-inspired robots. Mesencephalic Locomotor Region (MLR) is responsible for controlling locomotion initiation, speed and gait transitions. Reticulospinal (RS) neurons receive input from MLR and are responsible for controlling spinal locomotor circuits (CPG circuits).
   </p> 
   </div>
+</div>
+
+To address the challenges in robot locomotion in unpredictable real-world environments, I am working on different projects that delves into various aspects of animal locomotion 
+
+
+{% assign categorized_projects = site.projects | where: "category", "current" | sort: "importance" %}
+
+
+<div class="container">
+  {% for project in categorized_projects %}
+    <div class="row justify-content-sm-center project-item mb-5">
+      <!-- {% cycle 'left', 'right' as cycle_var %} -->
+        {% if project.importance == 1 or project.importance == 3 %}
+          <div class="col-sm-6 mt-3 mt-md-0">
+            {% include figure.liquid path=project.img title=project.title class="img-fluid rounded z-depth-1" %}
+          </div>
+          <div class="col-sm-6 mt-3 mt-md-0">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+          </div>
+        {% else %}
+          <div class="col-sm-6 mt-3 mt-md-0 order-2 order-md-1">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+          </div>
+          <div class="col-sm-6 mt-3 mt-md-0 order-1 order-md-2">
+            {% include figure.liquid path=project.img title=project.title class="img-fluid rounded z-depth-1" %}
+          </div>
+        {% endif %}
+      </div>
+  {% endfor %}
 </div>

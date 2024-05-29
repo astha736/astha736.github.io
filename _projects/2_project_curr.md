@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Bio-Inspired Controllers Facilitate Sim-to-Real Transfer
-description: Exploring how central pattern generators facilitate sim-to-real transfers
-img: assets/img/12.jpg
+title: How Bio-Inspired Controllers Facilitate Sim-to-Real Transfer
+description: This project examines the role of bio-inspired controllers in the sim-to-real transfer process. By drawing inspiration from biological systems, the research aims to develop controllers that can effectively bridge the gap between simulation and real-world application.
+img: assets/img/Sim_to_Real.webp
 importance: 2
 category: current
 related_publications: true
