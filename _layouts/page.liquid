@@ -1,6 +1,14 @@
 ---
 layout: default
 ---
+{% if page.header.image %}
+<div class="page-banner" style="background-image: url('{{ page.header.image | relative_url }}'); margin-bottom: 20px;">
+  {% if page.header.caption %}
+  <div class="page-banner-caption">{{ page.header.caption }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
 <div class="post">
   <header class="post-header">
     <h1 class="post-title">{{ page.title }}</h1>

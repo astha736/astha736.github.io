@@ -23,3 +23,44 @@ $max-content-width: {{ site.max_width }};
   "tabler-icons/tabler-icons-filled.scss",
   "tabler-icons/tabler-icons-outline.scss"
 ;
+
+// Add this to the bottom of your main stylesheet (style.scss or main.scss)
+
+.page-banner {
+  position: relative;
+  width: 100%;
+  height: auto; /* Adjust height based on aspect ratio */
+  padding-top: 31.25%; /* (600/1920)*100 to maintain aspect ratio */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-banner-caption {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.image-with-caption {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.image-with-caption img {
+  max-width: 100%;
+  height: auto;
+}
+
+.image-with-caption .caption {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+}
