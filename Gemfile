@@ -26,3 +26,8 @@ group :other_plugins do
     gem 'feedjira'
     gem 'httparty'
 end
+
+# Required for Ruby 4/Jekyll compatibility
+gem "logger"
+gem "observer"
+gem "ostruct"
