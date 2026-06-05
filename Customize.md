@@ -1,9 +1,9 @@
 # Project Setup and Customization
 
-
 ## Installation of Project on Ubuntu 22.04
 
 1. Setup Ruby
+
 ```
 sudo apt update
 sudo apt install ruby-full build-essential zlib1g-dev
@@ -17,29 +17,33 @@ source ~/.bashrc
 ```
 
 2. Install Bundler
+
 ```
 gem install bundler
 ```
 
 3. Clone al-folio instance
+
 ```
 git clone https://github.com/yourusername/al-folio.git
 cd al-folio
 ```
 
 4. Install jupyter
+
 ```
 pip3 install jupyter
 ```
 
 5. Locally build project
+
 ```
 bundle exec jekyll serve
 ```
 
-## Adding Publication List 
+## Adding Publication List
 
-Way to add a publication 
+Way to add a publication
 
 ```
 @article{PhysRev.47.777,

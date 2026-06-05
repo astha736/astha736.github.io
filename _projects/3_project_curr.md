@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Amphibious Path Planning for Bio-Inspired Salamander-Like Robot
-description:  By leveraging deep learning, sophisticated path planning algorithms, and bio-inspired adaptive control mechanisms, the robot aims to efficiently navigate both aquatic and terrestrial environments. The primary objective is to enhance search and rescue operations, allowing the robot to seamlessly transition between different terrains, overcome obstacles, and perform critical tasks in complex, dynamic settings.
+description: By leveraging deep learning, sophisticated path planning algorithms, and bio-inspired adaptive control mechanisms, the robot aims to efficiently navigate both aquatic and terrestrial environments. The primary objective is to enhance search and rescue operations, allowing the robot to seamlessly transition between different terrains, overcome obstacles, and perform critical tasks in complex, dynamic settings.
 img: assets/img/Amphibious_path_planning.webp
 importance: 3
 category: current

@@ -22,9 +22,6 @@ imagemagick: true
 
 <!-- ![]() -->
 
-
-
-
 Locomotion in real-world environments is particularly challenging for robots due to the unpredictable and dynamic nature of these settings. Unlike controlled laboratory conditions, real-world terrains vary in texture, slope, and stability, requiring robots to navigate uneven surfaces, obstacles, and changes in elevation. Environmental factors such as weather, debris, and interactions with other entities add further complexity. Stability and reliability in robotic locomotion require robust fault tolerance, as events like lesions, perturbations, and sensor failures are inevitable and significantly impact locomotion. While animals exhibit remarkable robustness to such disruptions, allowing them to recover and continue their tasks, robots must achieve similar resilience, especially in high-stakes scenarios like search and rescue. My research, inspired by the robustness seen in animals, investigates enhancing robot locomotion through sensory-motor integration, Central Pattern Generators (CPGs), and morphological adaptation.
 
 Meanwhile animals exhibit remarkable robustness to such disruptions, allowing them to recover and continue their tasks. Robots must achieve similar resilience, especially in high-stakes scenarios like search and rescue. My research, inspired by the robustness seen in animals, investigates enhancement strategies for robot locomotion through sensory-motor integration, Central Pattern Generators (CPGs), and morphological adaptation.
@@ -51,11 +48,9 @@ Meanwhile animals exhibit remarkable robustness to such disruptions, allowing th
   </div>
 </div>
 
-To address the challenges in robot locomotion in unpredictable real-world environments, I am working on different projects that delves into various aspects of animal locomotion 
-
+To address the challenges in robot locomotion in unpredictable real-world environments, I am working on different projects that delves into various aspects of animal locomotion
 
 {% assign categorized_projects = site.projects | where: "category", "current" | sort: "importance" %}
-
 
 <div class="container">
   {% for project in categorized_projects %}

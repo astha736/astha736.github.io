@@ -18,12 +18,12 @@ profile:
     <p>Station 9 </p>
     <p>1015 Lausanne </p>
 
-news: true # update bio.liquid and define rules 
-selected_papers: false # update bio.liquid and define rules 
+news: true # update bio.liquid and define rules
+selected_papers: false # update bio.liquid and define rules
 # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
-latest_posts: true # update bio.liquid and define rules 
-announcements: true # update bio.liquid and define rules 
+latest_posts: true # update bio.liquid and define rules
+announcements: true # update bio.liquid and define rules
 ---
 
 I am a robotics researcher with a PhD in Robotics, Control, and Intelligent Systems from EPFL. My work lies at the intersection of robot learning, control, simulation-to-real transfer, and bio-inspired locomotion.
