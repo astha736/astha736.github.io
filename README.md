@@ -8,6 +8,8 @@ https://astha736.github.io
 
 The website is based on the **al-folio** Jekyll theme. I edit the source files locally, preview the site using Docker, check formatting with Prettier, and publish by pushing changes to GitHub.
 
+Check [al-folio repository](https://github.com/alshedivat/al-folio) for more information.
+
 ---
 
 ## 1. Mental Model
