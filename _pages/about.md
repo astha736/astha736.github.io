@@ -48,7 +48,8 @@ Meanwhile animals exhibit remarkable robustness to such disruptions, allowing th
   </div>
 </div>
 
-To address the challenges in robot locomotion in unpredictable real-world environments, I am working on different projects that delves into various aspects of animal locomotion
+To address the challenges in robot locomotion in unpredictable real-world environments,
+I am working on different projects that delves into various aspects of animal locomotion
 
 {% assign categorized_projects = site.projects | where: "category", "current" | sort: "importance" %}
 

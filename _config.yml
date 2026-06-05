@@ -214,6 +214,7 @@ kramdown:
 # Includes & excludes
 include: ["_pages"]
 exclude:
+  - docs_README/
   - bin/
   - CONTRIBUTING.md
   - CUSTOMIZE.md
@@ -228,7 +229,6 @@ exclude:
   - lighthouse_results/
   - package.json
   - package-lock.json
-  - _pages/about_astha.md
   - _pages/cv.md
   - _pages/teaching.md
   - _pages/blog.md
@@ -334,9 +334,8 @@ enable_publication_badges:
   google_scholar: true # Google Scholar badge (https://scholar.google.com/intl/en/scholar/citations.html)
 
 # Filter out certain bibtex entry keywords used internally from the bib output
-filtered_bibtex_keywords:
-  [
-    abbr,
+filtered_bibtex_keywords: [
+    # abbr,
     abstract,
     additional_info,
     altmetric,
