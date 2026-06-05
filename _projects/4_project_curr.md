@@ -1,81 +1,26 @@
 ---
 layout: page
-title: Deep Reinforcement Learning for Insights into Spatial, Topological, and Functional Integration of Proprioceptive Feedback during Undulatory Swimming
-description: This research utilizes deep reinforcement learning to investigate how proprioceptive feedback integrates spatially, topologically, and functionally during undulatory swimming. By simulating these complex interactions, the project seeks to enhance our understanding of locomotor control in aquatic environments.
-img: assets/img/Sensory_Integration.webp
+title: Deep Reinforcement Learning
+description: How can deep reinforcement learning reveal which proprioceptive feedback pathways are useful for robust undulatory swimming?
+img: assets/img/ProjectArt_DRL_Architecture.png
 importance: 4
-category: current
+category: Doctoral Research
 related_publications: true
+header:
+  image: "assets/img/ProjectArt_DRL_Architecture.png"
+status: Finished
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+{% if page.status %}
+<span class="badge badge-pill badge-success">{{ page.status }}</span>
+{% endif %}
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+## Overview
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+This project uses deep reinforcement learning to study how proprioceptive feedback contributes to undulatory swimming. Instead of treating feedback as a fixed biological detail, the project asks which feedback pathways are functionally useful when an embodied agent must learn stable and effective locomotion.
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
+The broader question is how sensory information should be organized across the body. During swimming, feedback can vary spatially, topologically, and functionally: it may depend on where sensors are placed, how they connect to the controller, and what information they provide. This project uses learning as a tool to test which forms of proprioceptive feedback support coordination, robustness, and efficient movement.
 
-You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
-Say you wanted to write a bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+## Methods and Tools
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
-
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
-
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
-
-{% endraw %}
+The work used physics-based simulation of lamprey-inspired swimming, deep reinforcement learning, proprioceptive feedback models, central pattern generator control, and systematic comparisons of feedback architectures. Learned policies were evaluated to understand how different feedback structures influence locomotor performance, stability, and recovery under perturbations.

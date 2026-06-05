@@ -1,81 +1,32 @@
 ---
 layout: page
-title: Amphibious Path Planning for Bio-Inspired Salamander-Like Robot
-description: By leveraging deep learning, sophisticated path planning algorithms, and bio-inspired adaptive control mechanisms, the robot aims to efficiently navigate both aquatic and terrestrial environments. The primary objective is to enhance search and rescue operations, allowing the robot to seamlessly transition between different terrains, overcome obstacles, and perform critical tasks in complex, dynamic settings.
-img: assets/img/Amphibious_path_planning.webp
+title: Amphibious Path Planning
+description: How can a salamander-like robot plan and follow paths across water and land while respecting the constraints of undulatory, body-driven locomotion?
+img: assets/img/ProjectArt_APP.png
 importance: 3
-category: current
-related_publications: true
+category: Doctoral Research
+related_publications: false
+header:
+  image: "assets/img/ProjectArt_APP.png"
+status: Ongoing
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+{% if page.status %}
+<span class="badge badge-pill badge-warning">{{ page.status }}</span>
+{% endif %}
+{% if page.status == "Ongoing" %}
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+  <p class="text-muted mt-2">
+    This project is ongoing. If it interests you, please feel free to reach out in case you would like to know more, discuss it, or explore ways to extend it.
+  </p>
+{% endif %}
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+## Overview
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
+This project studies path planning and guidance for amphibious, salamander-like robots that move using body undulations and limb coordination. Unlike wheeled or point-mass robots, these systems cannot instantaneously turn or follow arbitrary geometric paths; their motion is constrained by body dynamics, gait structure, terrain, and the interaction between the controller and the environment.
 
-You can also put regular text between your rows of images, even citations {% cite einstein1950meaning %}.
-Say you wanted to write a bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+The broader question is how high-level navigation goals can be translated into physically feasible low-level locomotion strategies. In amphibious settings, the robot must reason across water and land, handle changes in medium and terrain, and follow paths while preserving stable and efficient locomotor behavior.
 
-<div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
+## Methods and Tools
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
-
-{% raw %}
-
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
-
-{% endraw %}
+The work combines high-level path planning, waypoint and heading-based guidance, bio-inspired locomotion control, and physics-based simulation of salamander-like robots. The project explores planning and control strategies such as tree-based search, Dubins-style paths, guiding vector fields, and heading regulation, while studying how these methods interact with the constraints of undulatory locomotion and amphibious movement.
