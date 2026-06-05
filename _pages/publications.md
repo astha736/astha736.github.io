@@ -6,7 +6,10 @@ description: #publications by categories in reversed chronological order. genera
 nav: true
 nav_order: 2
 enable_publication_thumbnails: true
+hide_page_header: true
 ---
+
+Peer-reviewed work on bio-inspired robotics, sensory feedback, robot locomotion, morphology, reinforcement learning, and embodied intelligence.
 
 <!-- _pages/publications.md -->
 <div class="publications">

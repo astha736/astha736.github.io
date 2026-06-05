@@ -2,78 +2,52 @@
 layout: page
 title: Research
 permalink: /
-header:
-  image: "/assets/img/Amphibious_Banner.jpg"
+# header:
+#   image: "/assets/img/Amphibious_Banner.jpg"
 imagemagick: true
-#   caption: "Your caption here"
-# profile:
-#   align: center
-#   image: prof_pic.jpg
-#   image_circular: false # crops the image to make it circular
-#   more_info: >
-#     <p>MED 1 1215 (Bâtiment MED) </p>
-#     <p>Station 9 </p>
-#     <p>1015 Lausanne </p>
-
-# news: false # includes a list of news items
-# selected_papers: false # includes a list of papers marked as "selected={true}"
-# social: false # includes social icons at the bottom of the page
+hide_page_header: true
 ---
 
-<!-- ![]() -->
+<h2 class="mt-5 mb-3">Research Vision</h2>
 
-Locomotion in real-world environments is particularly challenging for robots due to the unpredictable and dynamic nature of these settings. Unlike controlled laboratory conditions, real-world terrains vary in texture, slope, and stability, requiring robots to navigate uneven surfaces, obstacles, and changes in elevation. Environmental factors such as weather, debris, and interactions with other entities add further complexity. Stability and reliability in robotic locomotion require robust fault tolerance, as events like lesions, perturbations, and sensor failures are inevitable and significantly impact locomotion. While animals exhibit remarkable robustness to such disruptions, allowing them to recover and continue their tasks, robots must achieve similar resilience, especially in high-stakes scenarios like search and rescue. My research, inspired by the robustness seen in animals, investigates enhancing robot locomotion through sensory-motor integration, Central Pattern Generators (CPGs), and morphological adaptation.
+My research asks how intelligent behavior emerges in systems that act through a physical body, under real-world constraints, and with objectives that rarely define a single correct solution. In embodied tasks, multiple strategies can achieve the same goal, yet differ in robustness, stability, energy use, adaptability, and transfer.
 
-Meanwhile animals exhibit remarkable robustness to such disruptions, allowing them to recover and continue their tasks. Robots must achieve similar resilience, especially in high-stakes scenarios like search and rescue. My research, inspired by the robustness seen in animals, investigates enhancement strategies for robot locomotion through sensory-motor integration, Central Pattern Generators (CPGs), and morphological adaptation.
+This question sits at the intersection of robotics, machine learning, control, biomechanics, and computational neuroscience. In my research, I am interested in understanding how different elements of an embodied system interact to enable intelligent behavior that remains reliable beyond controlled laboratory settings.
 
-## Why Are Animals Nailing It While Robots Keep Tripping Up?
+<h4 class="mt-5 mb-3">Grounding Intelligence in Embodiment</h4>
 
-<div class="row justify-content-sm-center">
+Intelligent behavior in robots is shaped not only by algorithms, but also by the body, sensors, morphology, contact, dynamics, and the environment. Before information is learned, inferred, or optimized by a model, it is already filtered and structured by the embodied system itself.
+
+I therefore view embodiment as a form of structure: it constrains what information is available, enables certain behaviors, and organizes how control and learning interact with the physical world.
+
+<h4 class="mt-5 mb-3">Locomotion as an Experimental Task</h4>
+
+Locomotion is a demanding setting because behavior cannot be separated from the body. Movement emerges through continuous interaction between control, sensing, morphology, contact, and the environment.
+
+This makes locomotion a useful task for studying physically grounded intelligence. In my work, I use locomotion to investigate how feedback, morphology, and control shape behavior that remains robust under perturbations, damage, and environmental change.
+
+<h4 class="mt-5 mb-3">Investigating and Learning from Biological Robustness</h4>
+
+Biological systems, from simple organisms such as worms to complex animals such as humans, remain remarkably capable under changes in terrain, perturbations, injury, and uncertainty. This robustness emerges from the interaction between neural circuits, sensory feedback, musculoskeletal structure, and the physical environment.
+
+<div class="row justify-content-sm-center mt-3 mb-3">
   <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/guinea_fowl_running_robot_fall.webp" title="Animal Nailing and Robot Tripping" class="img-fluid rounded z-depth-1" %}
+    {% include figure.liquid path="assets/img/guinea_fowl_running_robot_fall.webp" title="Animal robustness and robot locomotion" class="img-fluid rounded z-depth-1" %}
     <p class="caption">
-    Running over rough terrain: guinea fowl maintain dynamic stability despite a large unexpected change in substrate height (Daley, Monica A., et al.)[left]. Agility Robotics's Digit [left], and Boston Dynamics's Atlas [right].
-    </p> 
+      Running over rough terrain: guinea fowl maintain dynamic stability despite a large unexpected change in substrate height. In contrast, legged robots can still fail under terrain changes, perturbations, and contact uncertainty.
+    </p>
   </div>
 </div>
 
-"Why Are Animals Nailing It While Robots Keep Tripping Up?" is a question that both roboticists and biologists are eager to answer. Animals benefit from sophisticated locomotor control, utilizing Central Pattern Generators (CPGs)—neural circuits in the spinal cord that generate rhythmic movement patterns—and higher brain centers that provide adaptive and goal-directed motor control. Their musculoskeletal systems offer dynamic flexibility and strength, enabling seamless adaptation to varying terrains. Moreover, animals possess acute sensory perception, integrating real-time environmental feedback to adjust movements instantly. By understanding and emulating these biological principles, robotics can improve and start to approach the performance levels seen in animals.
+During my PhD at the BioRobotics Laboratory, EPFL, I studied these questions by modeling animal locomotion principles in bio-inspired robots. I investigated how sensory feedback, neural control, morphology, and physical interaction contribute to adaptive behavior, and which principles may transfer to engineered physical agents.
 
 <div class="row justify-content-sm-center">
   <div class="col-sm-8 mt-3 mt-md-0">
     {% include figure.liquid path="assets/img/salamander2_robot_NeuroInsp.svg" title="Salamander vs Pleurobot" class="img-fluid" %}
-  <p class="caption">
-    Illustration of different components of the locomotor system and their interaction in animals and bio-inspired robots. Mesencephalic Locomotor Region (MLR) is responsible for controlling locomotion initiation, speed and gait transitions. Reticulospinal (RS) neurons receive input from MLR and are responsible for controlling spinal locomotor circuits (CPG circuits).
-  </p> 
+    <p class="caption">
+      Components of locomotor control in animals and bio-inspired robots. Descending commands, spinal circuits, sensory feedback, body mechanics, and environmental interaction jointly shape adaptive movement.
+    </p>
   </div>
 </div>
 
-To address the challenges in robot locomotion in unpredictable real-world environments,
-I am working on different projects that delves into various aspects of animal locomotion
-
-{% assign categorized_projects = site.projects | where: "category", "current" | sort: "importance" %}
-
-<div class="container">
-  {% for project in categorized_projects %}
-    <div class="row justify-content-sm-center project-item mb-5">
-      <!-- {% cycle 'left', 'right' as cycle_var %} -->
-        {% if project.importance == 1 or project.importance == 3 %}
-          <div class="col-sm-6 mt-3 mt-md-0">
-            {% include figure.liquid path=project.img title=project.title class="img-fluid rounded z-depth-1" %}
-          </div>
-          <div class="col-sm-6 mt-3 mt-md-0">
-            <h3>{{ project.title }}</h3>
-            <p>{{ project.description }}</p>
-          </div>
-        {% else %}
-          <div class="col-sm-6 mt-3 mt-md-0 order-2 order-md-1">
-            <h3>{{ project.title }}</h3>
-            <p>{{ project.description }}</p>
-          </div>
-          <div class="col-sm-6 mt-3 mt-md-0 order-1 order-md-2">
-            {% include figure.liquid path=project.img title=project.title class="img-fluid rounded z-depth-1" %}
-          </div>
-        {% endif %}
-      </div>
-  {% endfor %}
-</div>
+I explored these questions through [projects]({{ "/projects/" | relative_url }}) on sensory feedback, morphology, simulation-to-real transfer, path planning, reinforcement learning, inverse reinforcement learning, and neuro-inspired modulation.
