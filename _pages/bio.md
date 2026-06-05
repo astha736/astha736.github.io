@@ -28,8 +28,8 @@ announcements: true # update bio.liquid and define rules
 
 I am a robotics researcher with a PhD in Robotics, Control, and Intelligent Systems from EPFL. My work lies at the intersection of robot learning, control, simulation-to-real transfer, and bio-inspired locomotion.
 
-My research asks **how adaptive and resilient behavior emerges** from the interaction between control, feedback, morphology, and the physical environment. I study this question using physics-based simulation, reinforcement learning, inverse reinforcement learning, neuro-inspired control, and experiments on robotic platforms.
+My research asks how adaptive and resilient behavior emerges from the interaction between control, feedback, morphology, and the physical environment. I study this question using physics-based simulation, reinforcement learning, inverse reinforcement learning, neuro-inspired control, and experiments on robotic platforms.
 
 During my PhD at BioRobotics Laboratory, EPFL, I worked with complex bio-inspired systems including AgnathaX, Polymander, Pleurobot, and Krock. Across these platforms, I developed and evaluated controllers for locomotion, robustness, sensory feedback integration, morphology-dependent behavior, and sim-to-real transfer.
 
-A central theme in my work is **physically grounded robot intelligence**: learning and control methods that respect embodiment, contact, dynamics, morphology, and real-world constraints. I am particularly interested in how robots and biological systems select behavior when many strategies can satisfy the same task objective, but differ in robustness, stability, energy use, and transfer.
+A central theme in my work is physically grounded robot intelligence: learning and control methods that respect embodiment, contact, dynamics, morphology, and real-world constraints. I am particularly interested in how robots and biological systems select behavior when many strategies can satisfy the same task objective, but differ in robustness, stability, energy use, and transfer.
