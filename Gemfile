@@ -31,3 +31,4 @@ end
 gem "logger"
 gem "observer"
 gem "ostruct"
+gem "rake"
