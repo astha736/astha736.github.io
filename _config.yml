@@ -231,7 +231,6 @@ exclude:
   - package-lock.json
   - _pages/cv.md
   - _pages/teaching.md
-  - _pages/blog.md
   - _pages/dropdown.md
   - _pages/repositories.md
   - _backups/
