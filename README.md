@@ -545,3 +545,27 @@ After deploy succeeds:
 ```text
 https://astha736.github.io
 ```
+
+## 17. When things don't work
+
+1. check if the repository can be build with all the gemfiles mentioned
+
+```sh
+docker compose run --rm jekyll sh -lc 'bundle exec jekyll build'
+```
+
+- create temporary jekyll container
+- run bundle exec jekyll build inside that container
+- delete the temporary container afterward
+
+2. If there are missing bundles from last step, try to check if they can be installed
+
+```sh
+docker compose run --rm jekyll sh -lc 'bundle install'
+```
+
+3. To inspect the build and site data inside the container
+
+```sh
+docker compose run --rm jekyll sh -lc 'pwd && ls -la'
+```

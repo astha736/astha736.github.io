@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Understanding U-Net as a “What → Where” Machine
+title: Understanding U-Net as a “what → where” machine
 date: 2026-06-26 10:00:00+0200
-description: A visual intuition for U-Net, skip connections, transposed convolutions, and pixel-wise segmentation.
-tags: u-net segmentation computer-vision cnn deep-learning
-categories: technical-notes
+description: A visual walkthrough of U-Net for image segmentation, explaining how CNNs learn “what” is in an image but lose precise “where” information. The post breaks down the U shaped architecture in down-sample blocks, up-sample blocks, skip connections, transposed convolutions, and supervised training with segmentation masks.
+tags: u-net network-architecture segmentation deep-learning
+categories: paper-notes
 thumbnail: assets/img/blog/unet/unet_u_shape.png
 toc:
   beginning: true
@@ -20,7 +20,7 @@ While learning _what_ is in an image is useful, knowing **_where_** something is
 
 > A classification problem with CNN and MLP layers can predict that there is probably a robot arm, a cell boundary, a gripper, or a foreground object somewhere in the image. But a segmentation model has to answer a denser question: does pixel `(px, py)` belong to the robot arm or to the background?
 
-This is where Ronneberger, Fischer, and Brox introduced U-Net {% cite ronneberger2015u --file blogs %}. Their motivation was to solve segmentation tasks on light microscopy images from the ISBI Cell Tracking Challenge 2015.
+This is where Ronneberger, Fischer, and Brox introduced U-Net {% cite ronneberger2015u --file blogs_unet %}. Their motivation was to solve segmentation tasks on light microscopy images from the ISBI Cell Tracking Challenge 2015.
 
 Although there are other ways to perform image segmentation, U-Net is reminiscent of encoder-decoder architectures and uses interesting tricks to improve segmentation efficiency. Moreover, U-Net-inspired architectures are frequently used in modern foundation models.
 
@@ -43,7 +43,7 @@ A convolutional block contains at least one instance of these operations. Each t
 The channels of the tensor accumulate abstract information as the tensor passes through these operations. A CNN architecture typically consists of many convolutional blocks followed by an MLP layer, which converts the abstract information stored in the final channels into outputs.
 
 These outputs are generally classification labels, for instance animal classes in the example above. Some variations can also include bounding box information.
-See the blog post by Karn for more details on CNN architecture {% cite karn2016convnets --file blogs %}.
+See the blog post by Karn for more details on CNN architecture {% cite karn2016convnets --file blogs_unet %}.
 
 {% include figure.liquid loading="eager" path="assets/img/blog/unet/unet_down_block.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 _Note that the **Down Block** in the diagram uses the same basic operations as a CNN layer, with repeated convolution and ReLU operations. U-Net uses the same design principle of compressed spatial size and increased channels in each block to capture semantic information in the network._
@@ -56,19 +56,19 @@ For classification, this is fine, because the MLP only needs to predict the labe
 
 ## Overall concept of a U-Net
 
-U-Net solves the problem of losing spatial detail in convolutional blocks, or Down-Sample blocks, by using up-convolutions and skip connections in the Up-Sample blocks.
+U-Net solves the problem of losing spatial detail in convolutional blocks, or down-sample blocks, by using up-convolutions and skip connections in the up-sample blocks.
 
 The architecture effectively uses two kinds of information:
 
 ```text
-uncompressed information from the corresponding Down-Sample block
+uncompressed information from the corresponding down-sample block
 +
-recovered information from previous Up-Sample layers
+recovered information from previous up-sample layers
 ```
 
 Together, these help recover the spatial detail needed for the segmentation task.
 
-#### Contracting path: Down-Sample blocks help zoom out to understand context
+#### Contracting path: down-sample blocks help zoom out to understand context
 
 The left side of U-Net is the contracting path. It looks like a standard CNN block repeated several times.
 
@@ -78,20 +78,20 @@ When the image becomes spatially smaller, the network can afford to store more f
 
 {% include figure.liquid loading="eager" path="assets/img/blog/unet/unet_u_shape.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 
-_The Down-Sample blocks contract the image. The bottleneck contains high-level meaning. The Up-Sample blocks expand the representation back toward an output map. The skip connections carry high-resolution information from the Down-Sample blocks directly to the corresponding Up-Sample blocks._
+\_The down-sample blocks contract the image. The bottleneck contains high-level meaning. The up-sample blocks expand the representation back toward an output map. The skip connections carry high-resolution information from the down-sample blocks directly to the corresponding up-sample blocks.
 
-#### Expanding path: Up-Sample blocks help recover where things are
+#### Expanding path: up-sample blocks help recover where things are
 
-The Up-Sample blocks progressively increase spatial resolution.
+The up-sample blocks progressively increase spatial resolution.
 
 However, upsampling alone is not enough. If we only upsample the previous tensor features, we get a larger map, but with the same limited information about the original image structure.
 
 Thus, to recover lost spatial detail, U-Net uses skip connections from the contracting path. These skip features come from tensors saved before pooling operations were performed.
 
-## Up-Sample block, step by step
+## up-sample block, step by step
 
-One Up-Sample block contains three conceptually separate operations: upsampling, concatenation with the skip feature, and convolutional refinement.
-In short, an Up-Sample block does three things:
+One up-sample block contains three conceptually separate operations: upsampling, concatenation with the skip feature, and convolutional refinement.
+In short, an up-sample block does three things:
 
 ```text
 upsample
@@ -101,9 +101,9 @@ refine using convolution + ReLU
 
 Suppose the bottleneck tensor has size `28 × 28 × 1024`. After an up-convolution, the tensor becomes `56 × 56 × 512`.
 
-This is, in a way, the opposite of a CNN/Down-Sample block. In the Down-Sample block, the number of channels increases while the spatial size decreases. In the Up-Sample block, upsampling increases the spatial size, while the number of channels is reduced.
+This is, in a way, the opposite of a CNN/down-sample block. In the down-sample block, the number of channels increases while the spatial size decreases. In the up-sample block, upsampling increases the spatial size, while the number of channels is reduced.
 
-The output is now larger, but it has still not recovered the lost spatial information. To recover that information, U-Net retrieves the skip feature from the corresponding block on the left side of the Down-Sample path.
+The output is now larger, but it has still not recovered the lost spatial information. To recover that information, U-Net retrieves the skip feature from the corresponding block on the left side of the down-sample path.
 
 We use the layer with the matching spatial size from before max-pooling. In this example, the skip feature would have size `56 × 56 × 512`.
 
@@ -118,7 +118,7 @@ x = torch.cat([upsampled, skip], dim=1)
 # data is shaped as (Batch, Channel, Height, Width)
 ```
 
-Thus, the block now contains both semantic information from the previous Up-Sample block or bottleneck, and spatial information from the skip connection. Concatenation puts both kinds of evidence in the same tensor.
+Thus, the block now contains both semantic information from the previous up-sample block or bottleneck, and spatial information from the skip connection. Concatenation puts both kinds of evidence in the same tensor.
 
 Then the next convolution and non-linear activation functions learn how to combine this information and prepare it for the next block.
 
@@ -128,7 +128,7 @@ Then the next convolution and non-linear activation functions learn how to combi
 
 It is important to note that skip features are saved **before pooling**.
 
-The tensor outputs at each Down-Sample block are saved. Later, when the Up-Sample path comes back to the same spatial scale, the saved tensor is retrieved and combined with the upsampled feature.
+The tensor outputs at each down-sample block are saved. Later, when the up-sample path comes back to the same spatial scale, the saved tensor is retrieved and combined with the upsampled feature.
 
 Why is this useful?
 
@@ -165,9 +165,9 @@ The stride controls how far apart the input locations are spread in the larger o
 
 _Figure 3: Transposed convolutions spread input locations apart according to stride, stamp a learned kernel at each location, and sum the overlapping contributions._
 
-In the U-Net Up-Sample block, this operation increases the spatial size of the tensor. This makes it possible to concatenate the upsampled tensor with the corresponding tensor from the skip connection.
+In the U-Net up-sample block, this operation increases the spatial size of the tensor. This makes it possible to concatenate the upsampled tensor with the corresponding tensor from the skip connection.
 
-### Conv + ReLU in the Up-Sample block combine meaning and detail
+### Conv + ReLU in the up-sample block combine meaning and detail
 
 After concatenation, the tensor is passed through convolution and a non-linear activation function. These operations can be repeated within the block.
 
@@ -181,7 +181,7 @@ spatial detail from the skip connection
 
 The previous layer provides low-resolution, abstract information about _what_ is present. The skip connection provides more local, image-like information that helps fill in the missing details.
 
-Hence, the Up-Sample block takes semantic information from previous layers and augments it with less abstract, more spatially detailed information received through skip connections. This helps the network get closer to the final segmentation map.
+Hence, the up-sample block takes semantic information from previous layers and augments it with less abstract, more spatially detailed information received through skip connections. This helps the network get closer to the final segmentation map.
 
 ## How U-Net is trained
 
@@ -195,19 +195,19 @@ The model outputs a dense pixel-wise prediction map. Each output pixel contains 
 
 Interestingly, the original paper also used a weight map so that difficult pixels, especially thin borders between touching cells, contributed more strongly to the loss.
 
-## The final memory shortcut
+## Retrieval summary
 
 The whole architecture can be reduced to a compact picture:
 
 ```text
-Down-Sample block:
+down-sample block:
     reduce spatial size
     compute and update abstract meaning in channels
 
 Bottleneck:
     store compressed meaning in the most compressed H × W format
 
-Up-Sample block:
+up-sample block:
     recover spatial size
     combine semantic meaning with spatial detail
 
@@ -215,9 +215,9 @@ Skip connection:
     restore detail
 ```
 
-The key insight is that U-Net has a U-shape because it first compresses the image with Down-Sample blocks to extract meaning in the channels. Then it uses up-convolutions and skip connections to move back toward the image size while keeping useful semantic information.
+The key insight is that U-Net has a U-shape because it first compresses the image with down-sample blocks to extract meaning in the channels. Then it uses up-convolutions and skip connections to move back toward the image size while keeping useful semantic information.
 
-A plain CNN gives us semantic understanding, but tends to lose precise localization through pooling. U-Net recovers localization by saving high-resolution features from the Down-Sample blocks and reusing them during the Up-Sample blocks.
+A plain CNN gives us semantic understanding, but tends to lose precise localization through pooling. U-Net recovers localization by saving high-resolution features from the down-sample blocks and reusing them during the up-sample blocks.
 
 ---
 
@@ -225,4 +225,4 @@ A plain CNN gives us semantic understanding, but tends to lose precise localizat
 
 ---
 
-{% bibliography --file blogs --cited_in_order --template bib_blog --group_by none %}
+{% bibliography --file blogs_unet --cited_in_order --template bib_blog --group_by none %}
