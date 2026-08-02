@@ -1,8 +1,8 @@
 ---
 layout: post
 title: DDPM learns generation by reversing gaussian noise
-date: 2026-08-02 10:00:00+0200
-description: An intuition-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
+date: 2026-08-02 22:00:00+0200
+description: An theory-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
 tags: ddpm diffusion generative-models u-net score-matching
 categories: paper-notes
 # thumbnail: assets/img/blog/ddpm/ddpm_forward_reverse.png
@@ -261,10 +261,10 @@ $$
 \alpha_t=1-\beta_t.
 $$
 
-Calculating $\bar{\alpha}_t$ as follows:
+Calculating $\bar{\alpha_t}$ as follows:
 
 $$
-\bar{\alpha}_t
+\bar{\alpha_t}
 =
 \prod_{s=1}^{t}\alpha_s.
 $$
@@ -274,9 +274,9 @@ Through substitution of paramter $\beta_t$, $x_t$ is alternatively calculated us
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}\,x_0
+\sqrt{\bar{\alpha_t}}\,x_0
 +
-\sqrt{1-\bar{\alpha}_t}\,\epsilon,
+\sqrt{1-\bar{\alpha_t}}\,\epsilon,
 \qquad
 \epsilon\sim\mathcal N(0,I),
 $$
@@ -367,9 +367,9 @@ Continuing this recursive substitution back to $(x_0)$ gives:
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}\,x_0
+\sqrt{\bar{\alpha_t}}\,x_0
 +
-\sqrt{1-\bar{\alpha}_t}\,\epsilon,
+\sqrt{1-\bar{\alpha_t}}\,\epsilon,
 \qquad
 \epsilon\sim\mathcal N(0,I),
 $$
@@ -377,7 +377,7 @@ $$
 where:
 
 $$
-\bar{\alpha}_t
+\bar{\alpha_t}
 =
 \prod_{s=1}^{t}\alpha_s.
 $$
@@ -392,8 +392,8 @@ q(x_t\mid x_0)
 \mathcal N
 \left(
 x_t;
-\sqrt{\bar{\alpha}_t}\,x_0,
-(1-\bar{\alpha}_t)I
+\sqrt{\bar{\alpha_t}}\,x_0,
+(1-\bar{\alpha_t})I
 \right).
 $$
 
@@ -402,9 +402,9 @@ Equivalently:
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}\,x_0
+\sqrt{\bar{\alpha_t}}\,x_0
 +
-\sqrt{1-\bar{\alpha}_t}\,\epsilon,
+\sqrt{1-\bar{\alpha_t}}\,\epsilon,
 \qquad
 \epsilon\sim\mathcal N(0,I).
 $$
@@ -467,7 +467,7 @@ $$
 What this means is effectively, in the network implementation, 
 where final outputs are predictions of the gaussian noise in the image ($\mathcal N(0,I)$), calculation of the final predicted image is done by scaling the final output ($z$, which is a predicted error tensor during implementation), by the $\sigma_t^2$ factor. 
 
-Ho et al. evaluate two fixed choices, $(\sigma_t^2=\beta_t)$ and $(\sigma_t^2=\tilde{\beta}_t)$. Here, $(\beta_t)$ is the forward-process variance, while $(\tilde{\beta}_t)$ is the posterior variance of the tractable forward posterior $(q(x_{t-1}\mid x_t,x_0))$. Both choices gave similar experimental results in the paper. The main learned quantity is therefore the reverse mean:
+Ho et al. evaluate two fixed choices, $(\sigma_t^2=\beta_t)$ and $ (\sigma_t^2=\tilde{\beta_t})$. Here, $(\beta_t)$ is the forward-process variance, while $(\tilde{\beta_t})$ is the posterior variance of the tractable forward posterior $(q(x_{t-1}\mid x_t,x_0))$. Both choices gave similar experimental results in the paper. The main learned quantity is therefore the reverse mean:
 
 $$
 \mu_\theta(x_t,t).
@@ -999,7 +999,7 @@ q(x_{t-1}\mid x_t,x_0)
 \left(
 x_{t-1};
 \tilde{\mu}_t(x_t,x_0),
-\tilde{\beta}_t I
+\tilde{\beta_t} I
 \right).
 $$
 
@@ -1011,7 +1011,7 @@ $$
 \frac{
 \sqrt{\bar{\alpha}_{t-1}}\beta_t
 }{
-1-\bar{\alpha}_t
+1-\bar{\alpha_t}
 }
 x_0
 +
@@ -1021,7 +1021,7 @@ x_0
 1-\bar{\alpha}_{t-1}
 \right)
 }{
-1-\bar{\alpha}_t
+1-\bar{\alpha_t}
 }
 x_t,
 $$
@@ -1029,12 +1029,12 @@ $$
 and:
 
 $$
-\tilde{\beta}_t
+\tilde{\beta_t}
 =
 \frac{
 1-\bar{\alpha}_{t-1}
 }{
-1-\bar{\alpha}_t
+1-\bar{\alpha_t}
 }
 \beta_t.
 $$
@@ -1090,7 +1090,7 @@ $$
 Substituting:
 
 $$
-\Sigma_q=\tilde{\beta}_t I,
+\Sigma_q=\tilde{\beta_t} I,
 \qquad
 \Sigma_p=\sigma_t^2 I,
 $$
@@ -1122,12 +1122,12 @@ C_t
 =
 \frac{D}{2}
 \left[
-\frac{\tilde{\beta}_t}{\sigma_t^2}
+\frac{\tilde{\beta_t}}{\sigma_t^2}
 -
 1
 +
 \log
-\frac{\sigma_t^2}{\tilde{\beta}_t}
+\frac{\sigma_t^2}{\tilde{\beta_t}}
 \right].
 $$
 
@@ -1166,9 +1166,9 @@ One option would be to train the neural network to predict the reverse mean dire
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}x_0
+\sqrt{\bar{\alpha_t}}x_0
 +
-\sqrt{1-\bar{\alpha}_t}\epsilon.
+\sqrt{1-\bar{\alpha_t}}\epsilon.
 $$
 
 Solving this equation for $(x_0)$ gives:
@@ -1177,9 +1177,9 @@ $$
 x_0
 =
 \frac{
-x_t-\sqrt{1-\bar{\alpha}_t}\epsilon
+x_t-\sqrt{1-\bar{\alpha_t}}\epsilon
 }{
-\sqrt{\bar{\alpha}_t}
+\sqrt{\bar{\alpha_t}}
 }.
 $$
 
@@ -1195,9 +1195,9 @@ $$
 \hat{x}_0
 =
 \frac{
-x_t-\sqrt{1-\bar{\alpha}_t}\epsilon_\theta(x_t,t)
+x_t-\sqrt{1-\bar{\alpha_t}}\epsilon_\theta(x_t,t)
 }{
-\sqrt{\bar{\alpha}_t}
+\sqrt{\bar{\alpha_t}}
 }.
 $$
 
@@ -1213,7 +1213,7 @@ x_t
 \frac{
 \beta_t
 }{
-\sqrt{1-\bar{\alpha}_t}
+\sqrt{1-\bar{\alpha_t}}
 }
 \epsilon_\theta(x_t,t)
 \right).
@@ -1233,7 +1233,7 @@ L_{t-1}
 \frac{
 \beta_t^2
 }{
-2\sigma_t^2\alpha_t(1-\bar{\alpha}_t)
+2\sigma_t^2\alpha_t(1-\bar{\alpha_t})
 }
 \left\|
 \epsilon
@@ -1250,9 +1250,9 @@ where:
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}x_0
+\sqrt{\bar{\alpha_t}}x_0
 +
-\sqrt{1-\bar{\alpha}_t}\epsilon.
+\sqrt{1-\bar{\alpha_t}}\epsilon.
 $$
 
 Define the timestep-dependent weight:
@@ -1263,7 +1263,7 @@ $$
 \frac{
 \beta_t^2
 }{
-2\sigma_t^2\alpha_t(1-\bar{\alpha}_t)
+2\sigma_t^2\alpha_t(1-\bar{\alpha_t})
 }.
 $$
 
@@ -1304,9 +1304,9 @@ $$
 -
 \epsilon_\theta
 \left(
-\sqrt{\bar{\alpha}_t}x_0
+\sqrt{\bar{\alpha_t}}x_0
 +
-\sqrt{1-\bar{\alpha}_t}\epsilon,
+\sqrt{1-\bar{\alpha_t}}\epsilon,
 t
 \right)
 \right\|^2
@@ -1342,7 +1342,7 @@ x_t
 \frac{
 \beta_t
 }{
-\sqrt{1-\bar{\alpha}_t}
+\sqrt{1-\bar{\alpha_t}}
 }
 \epsilon_\theta(x_t,t)
 \right)
@@ -1394,8 +1394,8 @@ q(x_t\mid x_0)
 \mathcal N
 \left(
 x_t;
-\sqrt{\bar{\alpha}_t}x_0,
-(1-\bar{\alpha}_t)I
+\sqrt{\bar{\alpha_t}}x_0,
+(1-\bar{\alpha_t})I
 \right),
 $$
 
@@ -1406,18 +1406,18 @@ $$
 =
 -
 \frac{
-x_t-\sqrt{\bar{\alpha}_t}x_0
+x_t-\sqrt{\bar{\alpha_t}}x_0
 }{
-1-\bar{\alpha}_t
+1-\bar{\alpha_t}
 }.
 $$
 
 Using the noising equation,
 
 $$
-x_t-\sqrt{\bar{\alpha}_t}x_0
+x_t-\sqrt{\bar{\alpha_t}}x_0
 =
-\sqrt{1-\bar{\alpha}_t}\epsilon,
+\sqrt{1-\bar{\alpha_t}}\epsilon,
 $$
 
 we get:
@@ -1429,7 +1429,7 @@ $$
 \frac{
 \epsilon
 }{
-\sqrt{1-\bar{\alpha}_t}
+\sqrt{1-\bar{\alpha_t}}
 }.
 $$
 
@@ -1442,7 +1442,7 @@ s_\theta(x_t,t)
 \frac{
 \epsilon_\theta(x_t,t)
 }{
-\sqrt{1-\bar{\alpha}_t}
+\sqrt{1-\bar{\alpha_t}}
 }.
 $$
 
@@ -1474,7 +1474,7 @@ $$
 
 This reverse update resembles Langevin dynamics because it combines two effects. The predicted score provides a local direction in image space toward configurations that are more probable under the noisy-data distribution at timestep $(t)$. The additional Gaussian term preserves the stochastic nature of the reverse transition, allowing several plausible cleaner images to emerge from the same noisy state rather than forcing one deterministic reconstruction.
 
-However, DDPM sampling is more accurately described as **Langevin-like**. A generic Langevin sampler uses a chosen step size to move through one fixed probability distribution. DDPM instead moves through a sequence of distributions with decreasing noise levels, and the coefficients of each update are derived from the predefined forward diffusion schedule $(\alpha_t,\beta_t,\bar{\alpha}_t)$. Thus, it has the same basic pattern—score-directed movement plus stochastic noise—but its update rule comes specifically from reversing the discrete diffusion process.
+However, DDPM sampling is more accurately described as **Langevin-like**. A generic Langevin sampler uses a chosen step size to move through one fixed probability distribution. DDPM instead moves through a sequence of distributions with decreasing noise levels, and the coefficients of each update are derived from the predefined forward diffusion schedule $(\alpha_t,\beta_t,\bar{\alpha_t})$. Thus, it has the same basic pattern—score-directed movement plus stochastic noise—but its update rule comes specifically from reversing the discrete diffusion process.
 
 The practical importance is that the same learned function has three interpretations. As a noise predictor, it estimates the corruption inside $(x_t)$. As a reverse-process parameterization, it defines the mean of $(p_\theta(x_{t-1}\mid x_t))$. As a score field, it gives a local direction toward more realistic data.
 
@@ -1502,7 +1502,7 @@ The DDPM architecture also inserts self-attention blocks at the `16 × 16` featu
 
 For the attention mechanism itself, see [Attention is an information-routing operator]({% post_url 2026-06-29-understanding-attention %}).
 
-The model contains many equations, but not every quantity is learned. The forward transition $(q(x_t\mid x_{t-1}))$, the noise schedule $(\beta_t)$, $(\alpha_t)$, $(\bar{\alpha}_t)$, the prior $(p(x_T)=\mathcal N(0,I))$, the form of the reverse Gaussian, and the equations converting $(\epsilon_\theta)$ into $(\mu_\theta)$ are fixed. The learned part is the neural network parameterized by $(\theta)$, which predicts $(\epsilon_\theta(x_t,t))$.
+The model contains many equations, but not every quantity is learned. The forward transition $q(x_t\mid x_{t-1})$, the noise schedule $\beta_t$, $\alpha_t$, $(\bar{\alpha_t})$, the prior $(p(x_T)=\mathcal N(0,I))$, the form of the reverse Gaussian, and the equations converting $(\epsilon_\theta)$ into $(\mu_\theta)$ are fixed. The learned part is the neural network parameterized by $(\theta)$, which predicts $(\epsilon_\theta(x_t,t))$.
 
 ## Bridge to Diffusion Policy: from images to action sequences
 
@@ -1560,9 +1560,9 @@ The closed-form corruption equation is:
 $$
 x_t
 =
-\sqrt{\bar{\alpha}_t}x_0
+\sqrt{\bar{\alpha_t}}x_0
 +
-\sqrt{1-\bar{\alpha}_t}\epsilon.
+\sqrt{1-\bar{\alpha_t}}\epsilon.
 $$
 
 The reverse transition is:
@@ -1588,7 +1588,7 @@ $$
 x_t
 -
 \frac{\beta_t}
-{\sqrt{1-\bar{\alpha}_t}}
+{\sqrt{1-\bar{\alpha_t}}}
 \epsilon_\theta(x_t,t)
 \right).
 $$
@@ -1624,7 +1624,7 @@ s_\theta(x_t,t)
 \frac{
 \epsilon_\theta(x_t,t)
 }{
-\sqrt{1-\bar{\alpha}_t}
+\sqrt{1-\bar{\alpha_t}}
 }
 \approx
 \nabla_{x_t}\log q_t(x_t).
