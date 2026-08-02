@@ -1,8 +1,8 @@
 ---
 layout: post
-title: DDPM learns generation by reversing gaussian noise
+title: DDPM learns generation by reversing Gaussian noise
 date: 2026-08-02 22:00:00+0200
-description: An theory-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
+description: A theory-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
 tags: ddpm diffusion generative-models u-net score-matching
 categories: paper-notes
 # thumbnail: assets/img/blog/ddpm/ddpm_forward_reverse.png
@@ -14,15 +14,17 @@ mermaid:
   zoomable: false
 ---
 
-**Denoising Diffusion Probabilistic Models**, or DDPMs, are latent-variable generative models that learn to reverse a fixed Gaussian corruption process {% cite ho2020denoising --file blogs_ddpm %}. The model begins with a process that destroys structure: a clean image becomes slightly noisy, then more noisy, and eventually approximately Gaussian noise. It then learns a second process in the opposite direction: Gaussian noise becomes slightly more structured, then increasingly image-like, and finally a generated image.
+**Denoising Diffusion Probabilistic Models**, or DDPMs, are latent-variable generative models that learn to reverse a fixed Gaussian corruption process {% cite ho2020denoising --file blogs_ddpm %}. The model begins with a process that destroys structure: a clean image becomes slightly noisy, then noisier, and eventually resembles Gaussian noise. It then learns a second process in the opposite direction: Gaussian noise becomes slightly more structured, then increasingly image-like, and finally a generated image.
 
-At first, this looks like a complicated way to generate data. Why deliberately destroy images and then learn to reconstruct them? The reason is that direct generation, from Gaussian noise to a complete image in one step, is difficult, especillay when there is no baseline rules to do it. In DDPM, authors how a method to, in a way, generate data using forward nosing process, and learning how to denoise it as the ground truth is available. To do so, DDPM formalizes this into a sequence of smaller conditional problems, where each step only needs to move from $(x_t)$ to a slightly cleaner $(x_{t-1})$.
+At first, this looks like a complicated way to generate data. Why deliberately destroy images and then learn to reconstruct them? Directly mapping Gaussian noise to a complete image in one step is difficult because there is no simple rule for how each noisy pattern should become a coherent image. DDPM instead creates noisy training examples from real images, for which the added noise is known, and learns to reverse this corruption. It turns one difficult generation problem into a sequence of smaller conditional problems, each of which moves from $(x_t)$ to a slightly cleaner $(x_{t-1})$.
 
-Ho et al. show that the reverse process can be trained by asking a neural network to predict the Gaussian noise present in a corrupted image. Their central result is that a model trained using a relatively simple noise-prediction objective can generate high-quality images. On unconditional CIFAR-10, their best simplified-objective model reported an Inception Score of `9.46` and an FID of `3.17`. They also demonstrated image generation on CelebA-HQ and several `256 × 256` LSUN datasets.
+Ho et al. show that the reverse process can be trained by asking a neural network to predict the Gaussian noise present in a corrupted image. Their central result is that a model trained using a relatively simple noise-prediction objective can generate high-quality images. 
 
-## DDPM applied to generate images
+> For a code-first walkthrough, see my [Python notebook](https://github.com/astha736/research-os-labs/blob/main/modern_robotics_stack/ddpm_mnist.ipynb). Since this post is theory-heavy, I recommend starting with the notebook and then returning to the blog for the full derivation.
 
-The central idea of DDPM is to replace one hard generation problem, from noise to a image, with many easier denoising problems. Instead of learning a direct map from pure noise to a full image, DDPM defines a known forward process (using gaussian noise in the original work) that gradually corrupts data, then learns a reverse process that undoes this corruption step by step.
+## Applying DDPM to image generation
+
+The central idea of DDPM is to replace one difficult generation problem—from noise to an image—with many easier denoising problems. Instead of learning a direct map from pure noise to a complete image, DDPM defines a known forward process, based on Gaussian noise in the original work, that gradually corrupts data. It then learns a reverse process that undoes this corruption step by step.
 
 The forward process is denoted by $(q)$. It starts from real data $(x_0)$ and gradually adds Gaussian noise:
 
@@ -253,15 +255,15 @@ _The forward process progressively reduces the contribution of the original imag
 
 ### Closed-form noising: sampling $(x_t)$ directly from $(x_0)$
 
-In the paper, authors formulated $\beta_t$ in a way to generate samples in one step, without a need to rolling out each intermediate image for any given $t \in [0, T]$.
+The forward process is designed so that a noisy sample $(x_t)$ can be generated directly from $(x_0)$ for any chosen timestep, without rolling out every intermediate image.
 
 
-This is achieved by assuming a new variable $\alpha_t$
+This is achieved by defining:
 $$
 \alpha_t=1-\beta_t.
 $$
 
-Calculating $\bar{\alpha_t}$ as follows:
+The cumulative signal-retention coefficient is:
 
 $$
 \bar{\alpha_t}
@@ -269,7 +271,7 @@ $$
 \prod_{s=1}^{t}\alpha_s.
 $$
 
-Through substitution of paramter $\beta_t$, $x_t$ is alternatively calculated using:
+Using these coefficients, $(x_t)$ can be sampled directly as:
 
 $$
 x_t
@@ -281,8 +283,10 @@ x_t
 \epsilon\sim\mathcal N(0,I),
 $$
 
-In the above calculation, vectors of $\beta$, $\alpha$ and $\bar{\alpha}$, can be calculated and saved beforehand. Thus, evaluation requires sampling noise and multiplying the image tensor and noise tensor with the appropriate factor defined by above equation.
+The schedules $(\beta_t)$, $(\alpha_t)$, and $(\bar{\alpha}_t)$ can be computed and stored in advance. Constructing $(x_t)$ then requires only sampling a noise tensor and scaling the image and noise by the coefficients for the chosen timestep.
 
+
+The result above is sufficient for implementation. The derivation below shows why the cumulative noise remains Gaussian; readers interested only in the final sampling equation can skip to the next section.
 
 ---
 **Derivation**
@@ -328,7 +332,7 @@ x_t
 \sqrt{1-\alpha_t}\,\epsilon_t,
 $$
 
-one step substitution of $(x_{t-1})$ gives:
+a one-step substitution of $(x_{t-1})$ gives:
 
 $$
 x_t
@@ -464,10 +468,9 @@ x_{t-1}
 z \sim \mathcal N(0,I).
 $$
 
-What this means is effectively, in the network implementation, 
-where final outputs are predictions of the gaussian noise in the image ($\mathcal N(0,I)$), calculation of the final predicted image is done by scaling the final output ($z$, which is a predicted error tensor during implementation), by the $\sigma_t^2$ factor. 
+In the implementation, the neural network predicts the noise term $(\epsilon_\theta(x_t,t))$, which is converted into the reverse mean $(\mu_\theta(x_t,t))$ through the known diffusion equations. The variable $(z)$ is different: it is fresh Gaussian noise sampled during the reverse step and added as $(\sigma_t z)$ to preserve the stochasticity of the transition.
 
-Ho et al. evaluate two fixed choices, $(\sigma_t^2=\beta_t)$ and $ (\sigma_t^2=\tilde{\beta_t})$. Here, $(\beta_t)$ is the forward-process variance, while $(\tilde{\beta_t})$ is the posterior variance of the tractable forward posterior $(q(x_{t-1}\mid x_t,x_0))$. Both choices gave similar experimental results in the paper. The main learned quantity is therefore the reverse mean:
+Ho et al. evaluate two fixed choices, $(\sigma_t^2=\beta_t)$ and $ (\sigma_t^2=\tilde{\beta_t})$. Here, $(\beta_t)$ is the forward-process variance, while $(\tilde{\beta_t})$ is the posterior variance of the tractable forward posterior $(q(x_{t-1}\mid x_t,x_0))$. Both choices gave similar experimental results in the paper. The main quantity to learn to predict is therefore the reverse mean:
 
 $$
 \mu_\theta(x_t,t).
@@ -476,12 +479,9 @@ $$
 
 ## Deriving the DDPM training objective
 
-This section work through the equations to understand how the authors derived the final objective funtions and what the algorithms is trying to optimize.
+This section works through the equations used to derive the DDPM training objective and clarifies what the algorithm optimizes.
 
-How they manage it is by starting by the overall objective of 
-maximizing the probability to real clean data samples $(x_0)$, $p_\theta(x_0)$. However, they recognized that this is difficult to calculate, as one needs to know the all the trajectory of how $x_0$ could be created from noisy images. Instead they choose to work with information from the forward process $q(x_{1:T}\mid x_0)$, as it is easir to compute. 
-
-Then re-write objective interms of 
+The derivation begins with the goal of assigning high probability to real clean samples $(x_0)$ by maximizing $(p_\theta(x_0))$. This quantity is difficult to evaluate directly because it requires accounting for every possible latent trajectory through which $(x_0)$ could be generated. The authors therefore introduce the tractable forward process $(q(x_{1:T}\mid x_0))$ and rewrite the objective as:
 
 $$
 p_\theta(x_0)
@@ -491,7 +491,7 @@ p_\theta(x_{0:T})
 \,dx_{1:T}.
 $$
 
-Using bayesian rule and information of $q(x_{1:T}\mid x_0)$, they calculate the log likehood as expectation over
+By multiplying and dividing by $(q(x_{1:T}\mid x_0))$, they express the log-likelihood as an expectation under the known forward process:
 
 $$
 \log p_\theta(x_0)
@@ -507,9 +507,9 @@ q(x_{1:T}\mid x_0)
 \right].
 $$
 
-This calculation, is essential heping to estimate log-likelhood over one trajectory of $x_0$, and information over the forward process being used. Next, using Jensen's inequality, they find a lower bound estimate of the log-likehood. This is multiplied by -1 and used as a loss variable that should be minimzed. After few more, substitutions, the authors rewrite it as minimizing divergence between the distribution of forward-generation process and reverse process, since the variance is assumed to be knowm to the reverse process ($\beta_t$) the effective loss is minimization of error between input between ground truth and input image with predicted noise subtracted from it (aka output image of the reverse process). 
+This expectation makes the forward process available as a tractable distribution over latent trajectories. Jensen’s inequality then gives a lower bound on the log-likelihood. Negating this bound produces a loss to minimize. After further substitutions, the loss becomes a sum of divergences between tractable forward posteriors and learned reverse transitions. With fixed reverse variance, these terms reduce to mean matching and, under the noise parameterization, to a weighted noise-prediction error.
 
-Below is full derivation skip to next section. 
+The full derivation is given below. Readers interested only in the final training objective can skip to **The loss objective of DDPM is further simplified**.
 
 ---
 
@@ -542,7 +542,7 @@ $$
 Here, $(x_{1:T})$ are latent variables. They are called latent because during likelihood evaluation we only observe the clean image $(x_0)$, not the full reverse path that generated it.
 
 ---
-**Use information from forward process $(q)$ which is easy to calculate**
+**Use the tractable forward process $(q)$**
 
 The key idea is to introduce the known forward noising process:
 
@@ -662,18 +662,14 @@ q(x_{1:T}\mid x_0)
 }.
 $$
 
-This ratio is **importance**.
+This ratio is an **importance weight**.
 
-$q(x_{1:T}\mid x_0)$ indicates, how likely the forward process was to propose this trajectory
+$(q(x_{1:T}\mid x_0))$ indicates how likely the forward process is to propose the trajectory, while $(p_\theta(x_{0:T}))$ indicates how much probability density the current reverse model assigns to the complete trajectory. Their ratio corrects for how frequently $(q)$ proposes that trajectory.
 
-$p_\theta(x_{0:T})$:
-how likely does the current "reverse model" considers the complete trajectory
-Thus the ratio, corrects for how frequently q proposes that trajectory. 
-
-A trajectory which has high $q$ value, would be sampled frequently in a process, so dividing by $q$ prevents it from being overcounted. On other-hand, a trajectory with low $q$ would be sampled rarely, so its contribution are amplified in the ratio.
+A trajectory with a high $(q)$ value is sampled frequently, so dividing by $(q)$ prevents it from being overcounted. Conversely, a trajectory with a low $(q)$ value is sampled rarely, so the ratio amplifies its contribution.
 
 ---
-**Re-write log-likelhood of $p(x_0)$ in terms of lower bound**
+**Rewrite the log-likelihood of $(p(x_0))$ as a lower bound**
 
 Taking the logarithm gives:
 
@@ -691,7 +687,7 @@ q(x_{1:T}\mid x_0)
 \right].
 $$
 
-Since logarithm is concave, Jensen’s inequality gives:
+Because the logarithm is concave, Jensen’s inequality gives:
 
 $$
 \log \mathbb{E}[Z]
@@ -700,7 +696,7 @@ $$
 \tag{Jensen’s inequality}
 $$
 
-Therefore, the evidence lower bound, or ELBO:
+This gives the evidence lower bound, or ELBO:
 
 $$
 \boxed{
@@ -722,7 +718,7 @@ $$
 So $(q)$ is used as a tractable proposal distribution over hidden noisy paths. It lets us replace an intractable integral over all trajectories with an expectation over noisy trajectories that we can sample.
 
 ---
-**Simplyfing loss ($L$) calculation in terms of KL-divergence**
+**Simplifying the loss $(L)$ in terms of KL divergence**
 
 If we multiply by $(-1)$, the inequality flips:
 
@@ -791,7 +787,7 @@ L
 \right].
 $$
 
-At this point, the loss is written as a sum over the full diffusion trajectory, but it is not yet in the useful DDPM form. The useful form compares the learned reverse transition $(p_\theta(x_{t-1}\mid x_t))$ with the true reverse posterior from the forward process, $(q(x_{t-1}\mid x_t,x_0))$.
+At this point, the loss is written as a sum over the full diffusion trajectory, but it is not yet in the useful DDPM form. The useful form compares the learned reverse transition $(p_\theta(x_{t-1}\mid x_t))$ with the tractable posterior of the forward process, $(q(x_{t-1}\mid x_t,x_0))$.
 
 For $(t>1)$, Bayes’ rule gives:
 
@@ -969,7 +965,7 @@ $$
 
 The cancellation happens only among the marginal forward terms $(\log q(x_t\mid x_0))$. The reverse posterior terms $(\log q(x_{t-1}\mid x_t,x_0))$ do not cancel; they remain and become the KL terms that train the learned reverse process.
 
-The first term checks whether the final noised image distribution is close to the prior. Since the forward noise schedule is fixed, this term is not affected by the neural network training. The middle term is the main learned denoising term: at each timestep, the learned reverse step should match the true reverse posterior of the forward process. The last term is the final reconstruction or decoder term from $(x_1)$ to $(x_0)$.
+The first term checks whether the final noised-image distribution is close to the prior. Because the forward noise schedule is fixed, this term is unaffected by neural-network training. The middle term is the main learned denoising term: at each timestep, the learned reverse step should match the tractable posterior of the forward process. The last term is the final reconstruction, or decoder, term from $(x_1)$ to $(x_0)$.
 
 ---
 **Loss function is reduced to reverse-mean matching**
@@ -1155,9 +1151,9 @@ $$
 
 Thus, once both reverse distributions are chosen to be Gaussian and the reverse variance is fixed, minimizing the KL divergence reduces to matching their means.
 
-$(C)$ contains terms that do not depend on the neural network parameters $(\theta)$. Therefore, the model mainly needs to learn the reverse mean $(\mu_\theta(x_t,t))$.
+$(C_t)$ contains terms that do not depend on the neural-network parameters $(\theta)$. Therefore, the model only needs to learn the reverse mean $(\mu_\theta(x_t,t))$.
 
-This is the c**onceptual bridge from variational inference to denoising**, turning a probability maximization problem to an optimization problem. 
+This is the **conceptual bridge from variational inference to denoising**: a likelihood-maximization problem becomes a tractable mean-matching objective.
 
 ### Why predicting noise is enough
 
@@ -1189,7 +1185,7 @@ $$
 \epsilon_\theta(x_t,t)\approx \epsilon,
 $$
 
-then it can implicitly estimate the clean image, as $\bar{\alpha_t}$ is known for the reverse process:
+then it can implicitly estimate the clean image because $(\bar{\alpha}_t)$ is known:
 
 $$
 \hat{x}_0
@@ -1201,7 +1197,7 @@ x_t-\sqrt{1-\bar{\alpha_t}}\epsilon_\theta(x_t,t)
 }.
 $$
 
-The same predicted noise can also be converted into the reverse mean image data:
+The same predicted noise can also be converted into the reverse mean:
 
 $$
 \mu_\theta(x_t,t)
@@ -1223,7 +1219,7 @@ Thus, the network predicts the effective noise pattern in $(x_t)$, and the known
 
 ### The loss term is evaluated as weighted noise-prediction error
 
-After substituting the noise-prediction parameterization into loss function of differences between ground truth image and predicted image from noisy input (dervied in a previous section), the reverse-process loss is finally calculated as weighted noise-prediction error:
+Substituting the noise-prediction parameterization into the reverse mean-matching loss derived above gives a weighted noise-prediction error:
 
 $$
 L_{t-1}
@@ -1315,16 +1311,16 @@ $$
 
 Here, $(t)$ is sampled uniformly from the diffusion timesteps, $(x_0)$ is sampled from the data distribution, and $(\epsilon)$ is sampled from a standard Gaussian during the forward process calculation. 
 
-In practice, the objective calculated by take a clean image, sample a timestep, add known Gaussian noise, and train the neural network to predict the exact noise that was added.
+In practice, the objective is evaluated by taking a clean image, sampling a timestep, adding known Gaussian noise, and training the neural network to predict the exact noise that was added.
 
 The simplified objective is not exactly equal to the original variational bound. It is an **unweighted version** of the denoising terms that arise from the variational derivation. Ho et al. report that this simplified objective improves sample quality, while the full variational objective gives better likelihood.
 
 ## Sampling after training
 
-Training and sampling use the model differently. During training, we start from a real $(x_0)$, sample one timestep, construct $(x_t)$ directly, and predict the known effective noise. During sampling, we start from random $(x_T)$, run every reverse timestep, predict noise at each state, and sample a new $(x_{t-1})$. Training does not need to execute the full reverse chain for every update, but sampling does. This is one reason DDPM training is straightforward while generation can be comparatively slow.
+Training and sampling use the model differently. During training, we start from a real $(x_0)$, sample one timestep, construct $(x_t)$ directly, and predict the known effective noise. During sampling, we start from a random $(x_T)$, run through every reverse timestep, predict noise at each state, and sample a new $(x_{t-1})$. Training does not need to execute the full reverse chain for every update, but sampling does. This is one reason DDPM training is straightforward while generation can be comparatively slow.
 
 
-After training, generation does not require a real input image. First sample can be pure noise:
+After training, generation does not require a real input image. The initial sample is pure Gaussian noise:
 
 $$
 x_T\sim\mathcal N(0,I).
@@ -1366,7 +1362,7 @@ $$
 
 {% include figure.liquid loading="eager" path="assets/img/blog/ddpm/ddpm_reverse_sampling.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 
-The reverse chain begins with Gaussian noise. Broad image structure appears first, while finer details emerge in later, lower-noise steps
+The reverse chain begins with Gaussian noise. Broad image structure appears first, while finer details emerge during later, lower-noise steps.
 
 ## Score learning and Langevin dynamics
 
@@ -1506,7 +1502,7 @@ The model contains many equations, but not every quantity is learned. The forwar
 
 ## Bridge to Diffusion Policy: from images to action sequences
 
-The same idea can be moved from image generation to action generation. In image DDPMs, the learned score-like denoising field moves noisy images toward realistic images. In Diffusion Policy, the generated object is a future robot action sequence, and denoising is conditioned on observations.
+The same idea can be extended from image generation to action generation. In image DDPMs, the learned score-like denoising field moves noisy images toward realistic images. In Diffusion Policy, the generated object is a future robot action sequence, and denoising is conditioned on observations.
 
 The conceptual bridge is:
 
@@ -1530,13 +1526,11 @@ For example, a robot may move around an obstacle on the left or on the right. Di
 
 ## Bringing the complete model together
 
-DDPM begins by defining a fixed forward Markov chain that gradually replaces data with Gaussian noise. The noise schedule determines how much signal is retained at each step, while the cumulative coefficient $\bar{\alpha_t}$ makes it possible to sample any corrupted state $(x_t)$ directly from $(x_0)$. 
-Each learned reverse transition can be trained to approximate ground truth, in one-step, by predicting noise to be removed.
+DDPM begins with a fixed forward Markov chain that gradually replaces data with Gaussian noise. The noise schedule determines how much signal remains at each step, while the cumulative coefficient $(\bar{\alpha}_t)$ makes it possible to sample any corrupted state $(x_t)$ directly from $(x_0)$. During training, each reverse transition is learned from a randomly selected noise level by predicting the effective noise present in $(x_t)$.
 
-The reverse model is parameterized through a timestep-conditioned neural network that predicts the effective Gaussian noise in $(x_t)$ and encoded $t$ as input information. 
-Simplified objective is used to train the model to learn to predict noise correctly. 
+The reverse model uses a timestep-conditioned neural network that receives both $(x_t)$ and an encoding of $(t)$. The simplified objective trains this network to predict the sampled noise directly. Through the known diffusion equations, that prediction defines the reverse mean and also corresponds to a score-like direction toward higher-density image configurations.
 
-Predicting noise is also somewhat equivalent to estimating the direction to predict more accurately. During generation, starting from $(x_T\sim\mathcal N(0,I))$, the model progressively removes noise, until it produces an image-like $(x_0)$.
+During generation, the model starts from $(x_T\sim\mathcal N(0,I))$ and repeatedly applies these learned reverse transitions until it produces an image-like $(x_0)$.
 
 ## Retrieval summary
 
