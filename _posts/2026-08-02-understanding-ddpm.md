@@ -1,6 +1,6 @@
 ---
 layout: post
-title: DDPM learns generation by reversing Gaussian noise
+title: DDPM learns generation by reversing gaussian noise
 date: 2026-08-02 10:00:00+0200
 description: An intuition-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
 tags: ddpm diffusion generative-models u-net score-matching
@@ -509,7 +509,7 @@ $$
 
 This calculation, is essential heping to estimate log-likelhood over one trajectory of $x_0$, and information over the forward process being used. Next, using Jensen's inequality, they find a lower bound estimate of the log-likehood. This is multiplied by -1 and used as a loss variable that should be minimzed. After few more, substitutions, the authors rewrite it as minimizing divergence between the distribution of forward-generation process and reverse process, since the variance is assumed to be knowm to the reverse process ($\beta_t$) the effective loss is minimization of error between input between ground truth and input image with predicted noise subtracted from it (aka output image of the reverse process). 
 
-Below is full derivation feel fee to skip it. 
+Below is full derivation skip to next section. 
 
 ---
 
@@ -1157,6 +1157,8 @@ Thus, once both reverse distributions are chosen to be Gaussian and the reverse 
 
 $(C)$ contains terms that do not depend on the neural network parameters $(\theta)$. Therefore, the model mainly needs to learn the reverse mean $(\mu_\theta(x_t,t))$.
 
+This is the c**onceptual bridge from variational inference to denoising**, turning a probability maximization problem to an optimization problem. 
+
 ### Why predicting noise is enough
 
 One option would be to train the neural network to predict the reverse mean directly. Ho et al. instead parameterize the reverse mean through noise prediction. This works because there is a clear relationship between $(x_t)$, $(x_0)$, and the sampled noise $(\epsilon)$:
@@ -1219,9 +1221,9 @@ $$
 
 Thus, the network predicts the effective noise pattern in $(x_t)$, and the known diffusion equations convert that prediction into the reverse Gaussian mean. The model is not learning the whole sampling equation from scratch; it learns the unknown denoising direction contained in $(\epsilon_\theta(x_t,t))$.
 
-### The exact variational term becomes a weighted noise-prediction loss
+### The loss term is evaluated as weighted noise-prediction error
 
-After substituting the noise-prediction parameterization into loss function, the reverse-process loss becomes a weighted noise-prediction error:
+After substituting the noise-prediction parameterization into loss function of differences between ground truth image and predicted image from noisy input (dervied in a previous section), the reverse-process loss is finally calculated as weighted noise-prediction error:
 
 $$
 L_{t-1}
@@ -1285,9 +1287,10 @@ C
 }
 $$
 
-This is the conceptual bridge from variational inference to denoising. The ELBO gives Gaussian KL terms. The Gaussian KL terms become mean-matching objectives. With the noise parameterization, mean matching becomes a weighted MSE between the true noise $(\epsilon)$ and the predicted noise $(\epsilon_\theta(x_t,t))$.
+With the noise parameterization, mean matching becomes a weighted MSE between the true noise $(\epsilon)$ and the predicted noise $(\epsilon_\theta(x_t,t))$.
 
-### The simplified DDPM objective
+
+### The loss objective of DDPM is further simplified
 
 Ho et al. simplify the objective by removing the timestep-dependent weight $(\lambda_t)$. The simplified objective is:
 
@@ -1310,15 +1313,18 @@ t
 \right].
 $$
 
-Here, $(t)$ is sampled uniformly from the diffusion timesteps, $(x_0)$ is sampled from the data distribution, and $(\epsilon)$ is sampled from a standard Gaussian. This is the objective implemented in practice: take a clean image, sample a timestep, add known Gaussian noise, and train the neural network to predict the exact noise that was added.
+Here, $(t)$ is sampled uniformly from the diffusion timesteps, $(x_0)$ is sampled from the data distribution, and $(\epsilon)$ is sampled from a standard Gaussian during the forward process calculation. 
 
-The simplified objective should not be described as exactly equal to the original variational bound. It is an unweighted version of the denoising terms that arise from the variational derivation. Ho et al. report that this simplified objective improves sample quality, while the full variational objective gives better likelihood.
+In practice, the objective calculated by take a clean image, sample a timestep, add known Gaussian noise, and train the neural network to predict the exact noise that was added.
+
+The simplified objective is not exactly equal to the original variational bound. It is an **unweighted version** of the denoising terms that arise from the variational derivation. Ho et al. report that this simplified objective improves sample quality, while the full variational objective gives better likelihood.
 
 ## Sampling after training
 
-The practical training loop is simple because the difficult probabilistic derivation has been compressed into a noise-prediction task. The model samples a clean image $(x_0)$, samples a timestep $(t)$, samples Gaussian noise $(\epsilon)$, constructs the noisy image $(x_t)$, and trains $(\epsilon_\theta(x_t,t))$ to predict $(\epsilon)$.
+Training and sampling use the model differently. During training, we start from a real $(x_0)$, sample one timestep, construct $(x_t)$ directly, and predict the known effective noise. During sampling, we start from random $(x_T)$, run every reverse timestep, predict noise at each state, and sample a new $(x_{t-1})$. Training does not need to execute the full reverse chain for every update, but sampling does. This is one reason DDPM training is straightforward while generation can be comparatively slow.
 
-After training, generation does not require a real input image. First sample:
+
+After training, generation does not require a real input image. First sample can be pure noise:
 
 $$
 x_T\sim\mathcal N(0,I).
@@ -1360,11 +1366,9 @@ $$
 
 {% include figure.liquid loading="eager" path="assets/img/blog/ddpm/ddpm_reverse_sampling.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 
-_The reverse chain begins with Gaussian noise. Broad image structure appears first, while finer details emerge in later, lower-noise steps._
+The reverse chain begins with Gaussian noise. Broad image structure appears first, while finer details emerge in later, lower-noise steps
 
-Training and sampling use the model differently. During training, we start from a real $(x_0)$, sample one timestep, construct $(x_t)$ directly, and predict the known effective noise. During sampling, we start from random $(x_T)$, run every reverse timestep, predict noise at each state, and sample a new $(x_{t-1})$. Training does not need to execute the full reverse chain for every update, but sampling does. This is one reason DDPM training is straightforward while generation is comparatively slow.
-
-## Noise prediction as score learning
+## Score learning and Langevin dynamics
 
 The training objective tells us that the network learns to predict the noise inside a corrupted sample:
 
@@ -1380,7 +1384,7 @@ $$
 \nabla_x \log p(x).
 $$
 
-The score points in the local direction where the log probability increases fastest. In other words, it tells us how to move a sample toward a region that the model considers more likely.
+*The score points in the local direction where the log probability increases fastest*. In other words, it tells us how to move a sample toward a region that the model considers more likely.
 
 For the forward noising distribution,
 
@@ -1468,7 +1472,9 @@ x_t+\beta_t s_\theta(x_t,t)
 \sigma_t z.
 $$
 
-This resembles Langevin dynamics because it combines a gradient-like movement toward high-probability regions with stochastic noise. However, DDPM sampling is best described as **Langevin-like**, because its coefficients come from the discrete diffusion process rather than from a generic Langevin sampler.
+This reverse update resembles Langevin dynamics because it combines two effects. The predicted score provides a local direction in image space toward configurations that are more probable under the noisy-data distribution at timestep $(t)$. The additional Gaussian term preserves the stochastic nature of the reverse transition, allowing several plausible cleaner images to emerge from the same noisy state rather than forcing one deterministic reconstruction.
+
+However, DDPM sampling is more accurately described as **Langevin-like**. A generic Langevin sampler uses a chosen step size to move through one fixed probability distribution. DDPM instead moves through a sequence of distributions with decreasing noise levels, and the coefficients of each update are derived from the predefined forward diffusion schedule $(\alpha_t,\beta_t,\bar{\alpha}_t)$. Thus, it has the same basic pattern—score-directed movement plus stochastic noise—but its update rule comes specifically from reversing the discrete diffusion process.
 
 The practical importance is that the same learned function has three interpretations. As a noise predictor, it estimates the corruption inside $(x_t)$. As a reverse-process parameterization, it defines the mean of $(p_\theta(x_{t-1}\mid x_t))$. As a score field, it gives a local direction toward more realistic data.
 
@@ -1524,9 +1530,13 @@ For example, a robot may move around an obstacle on the left or on the right. Di
 
 ## Bringing the complete model together
 
-DDPM begins by defining a fixed forward Markov chain that gradually replaces data with Gaussian noise. The noise schedule determines how much signal is retained at each step, while the cumulative coefficient $(\bar{\alpha}_t)$ makes it possible to sample any corrupted state $(x_t)$ directly from $(x_0)$. This forward chain acts as a known approximate posterior over a hierarchy of latent variables. Because the posterior $(q(x_{t-1}\mid x_t,x_0))$ is Gaussian and tractable, each learned reverse transition can be trained to approximate an ideal one-step denoising distribution.
+DDPM begins by defining a fixed forward Markov chain that gradually replaces data with Gaussian noise. The noise schedule determines how much signal is retained at each step, while the cumulative coefficient $\bar{\alpha_t}$ makes it possible to sample any corrupted state $(x_t)$ directly from $(x_0)$. 
+Each learned reverse transition can be trained to approximate ground truth, in one-step, by predicting noise to be removed.
 
-The reverse model is parameterized through a timestep-conditioned neural network that predicts the effective Gaussian noise in $(x_t)$. This parameterization converts the variational transition terms into weighted denoising errors, while the paper’s simplified objective removes the timestep weights and gives better perceptual samples. Predicting noise is also equivalent, up to a known scale, to estimating the score of the noisy-data distribution. During generation, these learned score-like directions are combined with analytically derived diffusion coefficients and controlled stochastic noise. Starting from $(x_T\sim\mathcal N(0,I))$, the model progressively moves through less noisy distributions until it produces an image-like $(x_0)$.
+The reverse model is parameterized through a timestep-conditioned neural network that predicts the effective Gaussian noise in $(x_t)$ and encoded $t$ as input information. 
+Simplified objective is used to train the model to learn to predict noise correctly. 
+
+Predicting noise is also somewhat equivalent to estimating the direction to predict more accurately. During generation, starting from $(x_T\sim\mathcal N(0,I))$, the model progressively removes noise, until it produces an image-like $(x_0)$.
 
 ## Retrieval summary
 
