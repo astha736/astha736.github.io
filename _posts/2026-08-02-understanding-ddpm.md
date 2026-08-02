@@ -5,7 +5,7 @@ date: 2026-08-02 22:00:00+0200
 description: A theory-first walkthrough of Denoising Diffusion Probabilistic Models. The post builds from the fixed forward corruption process to the learned reverse process, derives the noise-prediction objective, explains its connection to score matching and Langevin-like sampling, and shows why a timestep-conditioned U-Net can generate images from noise.
 tags: ddpm diffusion generative-models u-net score-matching
 categories: paper-notes
-# thumbnail: assets/img/blog/ddpm/ddpm_forward_reverse.png
+thumbnail: assets/img/blog/ddpm/ddpm_infographic.png
 toc:
   beginning: true
 related_posts: false
@@ -249,9 +249,9 @@ $$
 p(x_T)=\mathcal N(0,I).
 $$
 
-{% include figure.liquid loading="eager" path="assets/img/blog/ddpm/ddpm_forward_process.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-
 _The forward process progressively reduces the contribution of the original image and increases the contribution of Gaussian noise._
+
+{% include figure.liquid loading="eager" path="assets/img/blog/ddpm/ddpm_infographic.png" class="img-fluid rounded z-depth-1" zoomable=true %}
 
 ### Closed-form noising: sampling $(x_t)$ directly from $(x_0)$
 
